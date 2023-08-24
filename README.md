@@ -10,6 +10,8 @@ qiime --help
 
 ## Basic usage
 ```bash
+qiime shared-asv compute --help
+
 Inputs:
   --i-table ARTIFACT FeatureTable[RelativeFrequency]
                        The feature table containing the samples for which
@@ -61,23 +63,14 @@ tail -n +2 shared_asv.txt | while read line; do
         --o-shared-asvs shared-asvs_$ID.qza
 done
 ```
-3. Run the command below. This step filters samples (optional).
-```bash
-for i in {1..39}; do
-qiime feature-table filter-samples \
-  --i-table shared-asvs_${i}.qza \
-  --m-metadata-file metadata/details/sample-data_skin.txt \
-  --o-filtered-table shared-asvs_${i}_skin.qza
-done
-```
-4. Merge the table files into one!
+3. Merge the table files into one!
 ```bash
 cp shared-asvs_1_skin.qza merged-table.qza
 
-for i in {2..39}; do
+for i in {2..5}; do
     qiime feature-table merge \
         --i-tables merged-table.qza \
-        --i-tables shared-asvs_${i}_skin.qza \
+        --i-tables shared-asvs_${i}.qza \
         --o-merged-table temp_merged-table.qza
 
      mv temp_merged-table.qza merged-table.qza
