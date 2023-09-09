@@ -35,7 +35,24 @@ Outputs:
 ```
 
 ## Example to run shared-asv plugin
-1. Make a table like below and name it as shared_asv.txt (tab-demilited format txt file).
+
+For 16S rRNA amplicon sequencing, use `biota-inc/16S_pipeline` on Github and create `analysis/table-no-unassigned-feature-filtered.qza`.
+
+1. Make a relative frequency table
+
+```bash
+# Compute the relative frequency of the features
+qiime feature-table relative-frequency \
+--i-table analysis/table-no-unassigned-feature-filtered.qza \
+--o-relative-frequency-table analysis/relative_frequency.qza
+
+# Summarize the relative frequency table
+qiime feature-table summarize \                                   
+--i-table  analysis/relative_frequency.qza \ 
+--o-visualization  analysis/relative_frequency.qzv
+```
+
+2. Make a table like below and name it as shared_asv.txt (tab-demilited format txt file).
 **Note: An empty last line is required!**
 
 | Pair A | Pair B | Pair ID |
@@ -47,9 +64,13 @@ Outputs:
 | S5     | N5     | 5       |
 |        |        |         |
 
-2. Run the command below. This step generates the shared ASV table of each pair.
+3. Run the command below. This step generates the shared ASV table of each pair.  
+
+
 ```bash
-tail -n +2 shared_asv.txt | while read line; do
+#  If tab delimiters are not recognized well, enclose `$line` and `$PairA(B)` with Quotation Marks (for example, `$(echo "$line" |`)
+
+tail -n +2 metadata/shared_asv.txt | while read line; do
     PairA=$(echo $line | awk -F'\t' '{print $1}' | tr -d '[:space:]')
     PairB=$(echo $line | awk -F'\t' '{print $2}' | tr -d '[:space:]')
     ID=$(echo $line | awk -F'\t' '{print $3}' | tr -d '[:space:]')
@@ -60,19 +81,50 @@ tail -n +2 shared_asv.txt | while read line; do
         --p-sample-a $PairA \
         --p-sample-b $PairB \
         --p-percentage 0.0001 \
-        --o-shared-asvs shared-asvs_$ID.qza
+        --o-shared-asvs analysis/shared-asvs_$ID.qza
 done
 ```
-3. Merge the table files into one!
+
+4. Filter samples for each shared-asvs file
 ```bash
-cp shared-asvs_1_skin.qza merged-table.qza
+# For example, filtering samples by using sample-data_skin.txt extracting only skin label of sample_type (if not, create this kind of file)
 
-for i in {2..5}; do
-    qiime feature-table merge \
-        --i-tables merged-table.qza \
-        --i-tables shared-asvs_${i}.qza \
-        --o-merged-table temp_merged-table.qza
-
-     mv temp_merged-table.qza merged-table.qza
+for i in {1..39}; do
+qiime feature-table filter-samples \
+  --i-table analysis/shared-asvs_${i}.qza \
+  --m-metadata-file metadata/sample-data_skin.txt \
+  --o-filtered-table analysis/shared-asvs_${i}_skin.qza
 done
+```
+
+5. Merge the table files into one!
+```bash
+# Initialize the merged table with the first shared-asvs skin file
+cp  analysis/shared-asvs_1_skin.qza  analysis/merged-table.qza
+
+# Merge all shared-asvs skin files
+for i in {2..39}; do
+    qiime feature-table merge \
+        --i-tables  analysis/merged-table.qza \
+        --i-tables  analysis/shared-asvs_${i}_skin.qza \
+        --o-merged-table  analysis/temp_merged-table.qza
+
+     mv  analysis/temp_merged-table.qza  analysis/merged-table.qza
+done
+```
+
+6. Final steps
+```bash
+# Summarize the merged table
+qiime feature-table summarize \
+        --i-table  analysis/merged-table.qza \
+        --o-visualization  analysis/merged-table.qzv
+
+# Export the merged table as a .biom file
+qiime tools export \
+  --input-path  analysis/merged-table.qza \
+  --output-path  analysis/merged-table
+  
+# Convert the .biom file to a TSV format
+biom convert -i  analysis/merged-table/feature-table.biom -o  analysis/merged-table/table_biom.txt --to-tsv
 ```
