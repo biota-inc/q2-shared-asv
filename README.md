@@ -126,5 +126,8 @@ qiime tools export \
   --output-path  analysis/merged-table
   
 # Convert the .biom file to a TSV format
-biom convert -i  analysis/merged-table/feature-table.biom -o  analysis/merged-table/table_biom.txt --to-tsv
+biom convert \
+  -i  analysis/merged-table/feature-table.biom \
+  -o  analysis/merged-table/table_biom.txt \
+  --to-tsv
 ```
