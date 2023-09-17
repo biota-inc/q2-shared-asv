@@ -1,8 +1,5 @@
 import qiime2
-from qiime2.plugin import Plugin
 from q2_feature_table import filter_features, filter_samples, merge, filter_features_conditionally
-from q2_types.feature_table import (
-    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence, Composition)
 import biom
 
 def compute(table: biom.Table, sample_a: str, sample_b: str, metadata: qiime2.Metadata, percentage: float) -> biom.Table:
@@ -41,8 +38,8 @@ def compute(table: biom.Table, sample_a: str, sample_b: str, metadata: qiime2.Me
     table_b1=table.copy()
 
     # Filter samples based on the input sample IDs
-    table_a = filter_samples(table_a1, where=f"\"sample-id\" IN ('{sample_a}')", metadata=metadata)
-    table_b = filter_samples(table_b1, where=f"\"sample-id\" IN ('{sample_b}')", metadata=metadata)
+    table_a = filter_samples(table_a1, where=f'\"sample-id\" IN ("{sample_a}")', metadata=metadata)
+    table_b = filter_samples(table_b1, where=f'\"sample-id\" IN ("{sample_b}")', metadata=metadata)
 
     # Merge the filtered feature tables of sample A and sample B
     shared_asvs = merge(

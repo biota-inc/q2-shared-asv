@@ -1,12 +1,6 @@
-from qiime2.plugin import (Str, Plugin, Choices, List, Citations, Range, Int,
-                           Float, Visualization, Bool, TypeMap, Metadata,
-                           MetadataColumn, Categorical)
-from q2_types.feature_table import (
-    FeatureTable, Frequency, RelativeFrequency, PresenceAbsence, Composition)
-from q2_types.feature_data import FeatureData
-from q2_feature_table import filter_features
+from qiime2.plugin import (Str, Plugin, Range, Float, Metadata)
+from q2_types.feature_table import (FeatureTable, RelativeFrequency)
 from q2_shared_asv.compute import compute
-import biom
 
 plugin = Plugin(
     name='shared-asv',
