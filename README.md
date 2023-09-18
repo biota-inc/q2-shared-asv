@@ -1,5 +1,9 @@
 # q2-shared_asv
+
+q2-shared_asv is a QIIME 2 plugin for shared ASV analysis.
+
 ## Installation
+
 ```bash
 # Activate your qiime2
 conda activate qiime2-2023.2
@@ -9,8 +13,9 @@ qiime --help
 ```
 
 ## Basic usage
+
 ```bash
-qiime shared-asv compute --help
+$ qiime shared-asv compute --help
 
 Inputs:
   --i-table ARTIFACT FeatureTable[RelativeFrequency]
@@ -53,6 +58,7 @@ qiime feature-table summarize \
 ```
 
 2. Make a table like below and name it as shared_asv.txt (tab-demilited format txt file).
+
 **Note: An empty last line is required!**
 
 | Pair A | Pair B | Pair ID |
@@ -86,6 +92,7 @@ done
 ```
 
 4. Filter samples for each shared-asvs file
+
 ```bash
 # For example, filtering samples by using sample-data_skin.txt extracting only skin label of sample_type (if not, create this kind of file)
 
@@ -98,6 +105,7 @@ done
 ```
 
 5. Merge the table files into one!
+
 ```bash
 # Initialize the merged table with the first shared-asvs skin file
 cp  analysis/shared-asvs_1_skin.qza  analysis/merged-table.qza
@@ -114,6 +122,7 @@ done
 ```
 
 6. Final steps
+
 ```bash
 # Summarize the merged table
 qiime feature-table summarize \
@@ -131,3 +140,7 @@ biom convert \
   -o  analysis/merged-table/table_biom.txt \
   --to-tsv
 ```
+
+# License
+
+q2-shared_asv is available under the BSD-3-Clause License. See the LICENSE file for more info.
