@@ -23,7 +23,9 @@ compute = compute_mod.compute
 # ---------------------------------------------------------------------------
 # Minimal biom.Table stub with payload support
 class FakeTable:
-    """Light-weight substitute for biom.Table used exclusively for unit tests."""
+    """
+    Light-weight substitute for biom.Table used exclusively for unit tests.
+    """
 
     def __init__(self, rows: int, cols: int, *, name: str, payload=None):
         self._shape = (rows, cols)
@@ -38,7 +40,11 @@ class FakeTable:
 
     def copy(self):
         # copy should duplicate payload to emulate real biom.Table.copy()
-        return FakeTable(*self._shape, name=f"{self.name}_copy", payload=self.payload)
+        return FakeTable(
+            *self._shape,
+            name=f"{self.name}_copy",
+            payload=self.payload,
+        )
 
     # For readable assert failure messages
     def __repr__(self):
@@ -102,8 +108,8 @@ def _patch_q2(monkeypatch, *, merged_tbl, cond_tbl, empty_tbl):
 @pytest.mark.parametrize("percentage", [0.0, 0.5, 1.0])
 def test_compute_non_empty(monkeypatch, percentage):
     merged_tbl = FakeTable(3, 2, name="merged", payload="M")
-    cond_tbl   = FakeTable(2, 2, name="cond_non_empty", payload="C")  # 2 rows
-    empty_tbl  = FakeTable(0, 1, name="empty_unused")
+    cond_tbl = FakeTable(2, 2, name="cond_non_empty", payload="C")
+    empty_tbl = FakeTable(0, 1, name="empty_unused")
 
     _patch_q2(
         monkeypatch,
@@ -131,8 +137,8 @@ def test_compute_non_empty(monkeypatch, percentage):
 # ============================================================================
 def test_compute_empty(monkeypatch):
     merged_tbl = FakeTable(3, 2, name="merged", payload="M")
-    cond_tbl   = FakeTable(0, 2, name="cond_empty", payload="C")      # 0 rows
-    empty_tbl  = FakeTable(0, 1, name="empty_returned", payload="E")
+    cond_tbl = FakeTable(0, 2, name="cond_empty", payload="C")      # 0 rows
+    empty_tbl = FakeTable(0, 1, name="empty_returned", payload="E")
 
     _patch_q2(
         monkeypatch,
