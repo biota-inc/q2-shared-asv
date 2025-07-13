@@ -9,11 +9,15 @@ description = "A QIIME 2 plugin for shared ASV analysis"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
-  { name = "Ryo NIWA", email = "ryo.niwa@cira.kyoto-u.ac.jp" }
+  { name = "Biota, inc." }
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = [
-  "qiime2",
+  "qiime2 >=2024.10.1",
+  "q2-types >=2024.10.0",
+  "q2-feature-table >=2024.10.0",
+  "biom-format >=2.1.15",
+  "setuptools",
 ]
 
 [project.urls]
