@@ -1,6 +1,15 @@
-from qiime2.plugin import Str, Range, Float, Metadata
+from qiime2.plugin import Plugin, Str, Range, Float, Metadata
 from q2_types.feature_table import FeatureTable, RelativeFrequency
 from q2_shared_asv.compute import compute
+
+plugin = Plugin(
+    name='shared-asv',
+    version='0.2.0',
+    website='https://github.com/biota-inc/q2-shared_asv',
+    package='q2_shared_asv',
+    description='A QIIME 2 plugin for shared ASV analysis',
+    short_description='Plugin for computing shared ASV.'
+)
 
 plugin.methods.register_function(
     function=compute,
