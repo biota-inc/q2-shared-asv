@@ -7,7 +7,7 @@
 #   0) Creates a toy BIOM table (if needed)
 #   1) Imports it into QIIME 2
 #   2) Converts counts → relative frequency
-#   3) Computes shared ASVs for each pair listed in shared_asv.txt
+#   3) Computes shared ASVs for each pair listed in shared_asv.tsv
 #   4) (Optional) Filters those tables by a metadata subset ("skin")
 #   5) Merges the filtered tables
 #   6) Summarizes and exports the final merged table
@@ -26,7 +26,7 @@ BIOM_FILE="$DATA_DIR/table.biom"
 FMT_QZA="$DATA_DIR/table.qza"
 REL_QZA="$DATA_DIR/relative_frequency.qza"
 
-PAIR_MAP="$DATA_DIR/sample_shared_asv.txt"
+PAIR_MAP="$DATA_DIR/sample_shared_asv.tsv"
 META_ALL="$DATA_DIR/sample_metadata.tsv"
 META_SKIN="$DATA_DIR/sample_metadata_skin_only.tsv"
 
