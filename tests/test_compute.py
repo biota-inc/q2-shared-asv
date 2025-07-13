@@ -1,24 +1,29 @@
 """
-回帰テスト: q2_shared_asv.compute.compute
+Regression test for: q2_shared_asv.compute.compute
 
-* percentage の境界値 (0, 0.5, 1) を網羅
-* if/else（共有 ASV 0 行かどうか）の両ブランチを網羅
-* C0 カバレッジ 100 %
+* Covers boundary values for `percentage` (0.0, 0.5, 1.0)
+* Covers both branches of the conditional: shared ASVs > 0 and == 0
+* Achieves 100% C0 (statement) coverage
 """
+
 import pytest
 import importlib
-import sys, pathlib
+import sys
+import pathlib
 
+
+# Add the project root to sys.path so we can import q2_shared_asv
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-#--- テスト対象モジュールを読み込み ------------------------
+
+# Load the compute function from the plugin module
 compute_mod = importlib.import_module("q2_shared_asv.compute")
 compute = compute_mod.compute
 
-#--- biom.Table もどき ------------------------------------
+
+# FakeTable mimics biom.Table (only shape and copy are needed)
 class FakeTable:
-    """shape と copy() だけを持つ軽量オブジェクト"""
     def __init__(self, rows: int, cols: int):
         self._shape = (rows, cols)
 
@@ -29,24 +34,24 @@ class FakeTable:
     def copy(self):
         return FakeTable(*self._shape)
 
-    # デバッグ用
     def __repr__(self):
         r, c = self._shape
         return f"<FakeTable {r}x{c}>"
 
-#--- 共通ヘルパ: q2_feature_table の関数をモンキーパッチ -------
+
+# Monkeypatch q2-feature-table functions
 def _patch_q2(monkeypatch, *, merged_shape, cond_shape, empty_shape):
     """
-    ・filter_samples          → 常に 1 列テーブルを返す
-    ・merge                   → merged_shape のテーブル
-    ・filter_features_cond.   → cond_shape のテーブル
-    ・filter_features         → empty_shape のテーブル
+    Replace q2-feature-table functions with stubs:
+    - filter_samples            -> returns 2x1 table
+    - merge                     -> returns merged_shape table
+    - filter_features_cond.     -> returns cond_shape table
+    - filter_features           -> returns empty_shape table
     """
-
     monkeypatch.setattr(
         compute_mod,
         "filter_samples",
-        lambda *a, **kw: FakeTable(2, 1),  # rows, cols
+        lambda *a, **kw: FakeTable(2, 1),
         raising=True,
     )
 
@@ -71,16 +76,15 @@ def _patch_q2(monkeypatch, *, merged_shape, cond_shape, empty_shape):
         raising=True,
     )
 
-# =================================================================
-# 共有 ASV が 1 行以上 → else ブランチ
-# =================================================================
+
+# Test: shared ASVs > 0 → goes through the `else` branch
 @pytest.mark.parametrize("percentage", [0.0, 0.5, 1.0])
 def test_compute_non_empty(monkeypatch, percentage):
     _patch_q2(
         monkeypatch,
-        merged_shape=(3, 2),   # dummy
-        cond_shape=(2, 2),     # > 0 行 → else
-        empty_shape=(0, 1),    # unused
+        merged_shape=(3, 2),
+        cond_shape=(2, 2),      # 2 rows → else branch
+        empty_shape=(0, 1),
     )
 
     result = compute(
@@ -94,15 +98,14 @@ def test_compute_non_empty(monkeypatch, percentage):
     assert isinstance(result, FakeTable)
     assert result.shape == (2, 2)
 
-# =================================================================
-# 共有 ASV が 0 行 → if ブランチ
-# =================================================================
+
+# Test: shared ASVs == 0 → goes through the `if` branch
 def test_compute_empty(monkeypatch):
     _patch_q2(
         monkeypatch,
         merged_shape=(3, 2),
-        cond_shape=(0, 2),     # 0 行 → if
-        empty_shape=(0, 1),    # 返ってくるテーブル
+        cond_shape=(0, 2),     # 0 rows → if branch
+        empty_shape=(0, 1),    # returned table
     )
 
     result = compute(
