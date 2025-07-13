@@ -5,7 +5,10 @@ from q2_shared_asv.compute import compute
 plugin = Plugin(
     name='shared-asv',
     version='0.2.0',
-    website='https://github.com/biota-inc/q2-shared-asv',
+    website=(
+        'https://github.com/biota-inc/'
+        'q2-shared-asv'
+    ),
     package='q2_shared_asv',
     description='A QIIME 2 plugin for shared ASV analysis.',
     short_description='Plugin for computing shared ASVs.'
@@ -47,7 +50,8 @@ parameter_descriptions = {
 
 output_descriptions = {
     'shared_asvs': (
-        'A feature table containing only the ASVs shared between the two samples.'
+        'A feature table containing only the ASVs shared between the '
+        'two samples.'
     )
 }
 
@@ -61,5 +65,6 @@ plugin.methods.register_function(
     parameter_descriptions=parameter_descriptions,
     output_descriptions=output_descriptions,
     name='Compute shared ASVs',
-    description='Computes ASVs shared between two samples within a feature table.'
+    description='Computes ASVs shared between two samples within a '
+                'feature table.'
 )
