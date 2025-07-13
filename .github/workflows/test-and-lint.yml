@@ -50,7 +50,7 @@ jobs:
       # 5. Run the smoke tests
       - name: Run smoke tests
         shell: bash -l {0}
-        run: make dev && qiime shared-asv --help
+        run: make dev && qiime shared-asv --help && qiime shared-asv compute --help 
 
   lint:
     runs-on: ubuntu-latest
