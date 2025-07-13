@@ -8,5 +8,4 @@ dependencies:
   - pip
   - pip:
     - flake8
-    - h5py
     - https://github.com/qiime2/q2lint/archive/master.zip

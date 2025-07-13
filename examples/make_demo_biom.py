@@ -7,15 +7,11 @@ import numpy as np
 import biom
 from biom.util import biom_open   # thin h5py wrapper
 
-samples = ["S1", "S2", "N1", "N2"]
+samples = [f"S{i}" for i in range(1, 6)] + [f"N{i}" for i in range(1, 6)]
 features = ["ASV1", "ASV2", "ASV3"]
 
-data = np.array([
-    [10,  0,  5,  2],
-    [0,  8,  1,  0],
-    [3,  3,  0,  7],
-])
-
+rng = np.random.default_rng(42)
+data = rng.integers(low=0, high=10, size=(len(features), len(samples)))
 table = biom.Table(
     data,
     observation_ids=features,
