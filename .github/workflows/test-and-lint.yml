@@ -12,6 +12,7 @@ on:
     branches: ["main"]
   push:
     branches: ["main"]
+  workflow_dispatch:
 
 jobs:
   build-and-test-qiime2-amplicon-dev:
