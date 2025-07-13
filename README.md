@@ -9,7 +9,7 @@
 conda activate qiime2
 
 # 2 Install the plugin directly from GitHub
-pip install "git+https://github.com/biota-inc/q2-shared_asv.git"
+pip install "git+https://github.com/biota-inc/q2-shared-asv.git"
 
 # 3 Refresh the QIIME 2 plugin cache (required for dev-installed plugins)
 qiime dev refresh-cache
@@ -84,65 +84,65 @@ Create a **tab-delimited** text file called `shared_asv.txt`:
 | S4     | N4     | 4       |
 | S5     | N5     | 5       |
 
-> **Tip:** End the file with a newline so that the last record is read correctly by `tail`.
-
 ### 3 Run the plugin for every pair
 
 ```bash
-tail -n +2 shared_asv.txt | while IFS=$'\t' read -r pairA pairB pairID; do
+while IFS=$'\t' read -r pairA pairB pairID || [ -n "$pairA" ]; do
   qiime shared-asv compute \
-    --i-table analysis/relative_frequency.qza \
-    --m-metadata-file metadata/sample-data.txt \
+    --i-table path/to/your/relative_frequency.qza \
+    --m-metadata-file path/to/your/sample_metadata.tsv \
     --p-sample-a "$pairA" \
     --p-sample-b "$pairB" \
     --p-percentage 0.0001 \
-    --o-shared-asvs "analysis/shared-asvs_${pairID}.qza"
-done
+    --o-shared-asvs "path/to/output/shared_asvs_${pairID}.qza"
+done < path/to/your/shared_asv.txt
 ```
 
 ### 4 (Optional) Filter each shared table by metadata
 
+> Example: extract only samples labeled `"skin"` in the `sample_type` column.
+
 ```bash
 for i in $(seq 1 5); do
   qiime feature-table filter-samples \
-    --i-table "analysis/shared-asvs_${i}.qza" \
-    --m-metadata-file metadata/sample-data_skin.txt \
-    --o-filtered-table "analysis/shared-asvs_${i}_skin.qza"
+    --i-table "path/to/output/shared_asvs_${i}.qza" \
+    --m-metadata-file path/to/your/sample_metadata_skin_only.tsv \
+    --o-filtered-table "path/to/output/shared_asvs_${i}_skin.qza"
 done
 ```
 
 ### 5 Merge the filtered tables
 
 ```bash
-# Seed the merge with the first table
-cp analysis/shared-asvs_1_skin.qza analysis/merged-table.qza
+# Start by copying the first filtered table
+cp path/to/output/shared_asvs_1_skin.qza path/to/output/merged_table.qza
 
 for i in $(seq 2 5); do
   qiime feature-table merge \
-    --i-tables analysis/merged-table.qza \
-    --i-tables "analysis/shared-asvs_${i}_skin.qza" \
-    --o-merged-table analysis/tmp.qza
-  mv analysis/tmp.qza analysis/merged-table.qza
+    --i-tables path/to/output/merged_table.qza \
+    --i-tables "path/to/output/shared_asvs_${i}_skin.qza" \
+    --o-merged-table path/to/output/tmp_merged_table.qza
+  mv path/to/output/tmp_merged_table.qza path/to/output/merged_table.qza
 done
 ```
 
 ### 6 Summarize and export
 
 ```bash
-# Summarize
+# Summarize the final merged table
 qiime feature-table summarize \
-  --i-table analysis/merged-table.qza \
-  --o-visualization analysis/merged-table.qzv
+  --i-table path/to/output/merged_table.qza \
+  --o-visualization path/to/output/merged_table.qzv
 
-# Export to BIOM
+# Export the table in BIOM format
 qiime tools export \
-  --input-path analysis/merged-table.qza \
-  --output-path analysis/merged-table
+  --input-path path/to/output/merged_table.qza \
+  --output-path path/to/output/merged_table_exported
 
-# Convert BIOM → TSV
+# Convert the BIOM file to TSV format
 biom convert \
-  -i analysis/merged-table/feature-table.biom \
-  -o analysis/merged-table/feature-table.tsv \
+  -i path/to/output/merged_table_exported/feature-table.biom \
+  -o path/to/output/feature_table.tsv \
   --to-tsv
 ```
 
