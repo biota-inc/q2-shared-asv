@@ -7,7 +7,7 @@ name = "q2-shared-asv"
 version = "0.2.0"
 description = "A QIIME 2 plugin for shared ASV analysis"
 readme = "README.md"
-license = { text = "BSD-3-Clause" }
+license = { file = "LICENSE" }
 authors = [
   { name = "Ryo NIWA", email = "ryo.niwa@cira.kyoto-u.ac.jp" }
 ]
@@ -33,4 +33,4 @@ packages = ["q2_shared_asv"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-"q2_shared_asv" = ["*"]3
+"q2_shared_asv" = ["*"]
