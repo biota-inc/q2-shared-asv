@@ -1,0 +1,70 @@
+# CI workflow: run unit tests (Ubuntu + macOS) with the QIIME 2 dev environment
+# and run flake8 / q2lint on Ubuntu.
+#
+# The conda env is built from environment-files/q2-shared-asv-qiime2-amplicon-dev.yml.
+# `make install` is expected to perform an editable install of the plugin,
+# and `make test` should invoke pytest with coverage.
+
+name: Test and lint
+
+on:
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-test-qiime2-amplicon-dev:
+    # Run the same job on the latest Ubuntu and macOS runners
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-13]
+
+    steps:
+      # 1. Checkout the repo
+      - uses: actions/checkout@v3
+
+      # 2. Install Miniconda and create the QIIME 2 dev environment
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          # Name of the conda env to activate
+          activate-environment: q2-shared-asv-qiime2-amplicon-dev
+          # Path to the environment YAML file
+          environment-file: environment-files/q2-shared-asv-qiime2-amplicon-dev.yml
+          auto-activate-base: false
+          # Do not touch the base env; speeds up CI a bit
+          miniforge-version: latest
+
+      # 3. Install the plugin into the env (editable install expected)
+      - name: Install plugin
+        shell: bash -l {0}     # -l -> run login shell so the conda env is active
+        run: make install
+
+      # 4. Run the regression tests with coverage
+      - name: Run tests
+        shell: bash -l {0}
+        run: make test
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repo
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      # 2. Use plain Python (no conda needed) for linting
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      # 4. Run flake8
+      - name: Run flake8
+        run: flake8
+
+      # 5. Run q2lint (QIIME 2 style guide)
+      - name: Run q2lint
+        run: q2lint
