@@ -56,15 +56,14 @@ qiime feature-table relative-frequency \
 echo -e "\nStep 3 - Compute shared ASVs for each pair"
 while IFS=$'\t' read -r pairA pairB pairID || [[ -n "$pairA" ]]; do
   out_file="$OUT_DIR/shared_asvs_${pairID}.qza"
-  echo "  • Pair $pairID: $pairA vs $pairB → $(basename "$out_file")"
+  echo "- Pair $pairID: $pairA vs $pairB → $(basename "$out_file")"
   qiime shared-asv compute \
     --i-table "$REL_QZA" \
     --m-metadata-file "$META_ALL" \
     --p-sample-a "$pairA" \
     --p-sample-b "$pairB" \
-    --p-percentage 0.0001 \
     --o-shared-asvs "$out_file"
-done < <(tail -n +2 "$PAIR_MAP")   # skip header
+done < <(tail -n +2 "$PAIR_MAP")
 
 # -----------------------------  Step 4  -------------------------------------
 echo -e "\nStep 4 - Filter each shared table by metadata subset (skin)"
@@ -88,10 +87,7 @@ for i in $(seq 2 "$i_max"); do
 done
 
 # -----------------------------  Step 6  -------------------------------------
-echo -e "\nStep 6 - Summarize and export"
-qiime feature-table summarize \
-  --i-table "$OUT_DIR/merged_table.qza" \
-  --o-visualization "$OUT_DIR/merged_table.qzv"
+echo -e "\nStep 6 - Eummarize and export"
 
 qiime tools export \
   --input-path "$OUT_DIR/merged_table.qza" \

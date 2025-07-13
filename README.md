@@ -51,7 +51,7 @@ This command computes shared ASVs between `Sample1` and `Sample2` that each have
 | **Parameter** | `--p-sample-a`      | Sample ID for the first sample to compare.                                         | ✅ Yes        |
 | **Parameter** | `--p-sample-b`      | Sample ID for the second sample to compare.                                        | ✅ Yes        |
 | **Parameter** | `--m-metadata-file` | Sample metadata file (must contain `sample-id` column).                            | ✅ Yes        |
-| **Parameter** | `--p-percentage`    | Minimum relative frequency threshold (float between 0 and 1).                      | ✅ Yes        |
+| **Parameter** | `--p-percentage`    | Minimum relative frequency threshold (float between 0 and 1. Default: 0.0001).                      | No        |
 | **Output**    | `--o-shared-asvs`   | Output feature table containing shared ASVs (`FeatureTable[RelativeFrequency]`).   | ✅ Yes        |
 
 Would you like a Japanese translation or a visualization of the shared ASVs workflow next?
@@ -126,14 +126,9 @@ for i in $(seq 2 5); do
 done
 ```
 
-### 6 Summarize and export
+### 6 Export
 
 ```bash
-# Summarize the final merged table
-qiime feature-table summarize \
-  --i-table path/to/output/merged_table.qza \
-  --o-visualization path/to/output/merged_table.qzv
-
 # Export the table in BIOM format
 qiime tools export \
   --input-path path/to/output/merged_table.qza \

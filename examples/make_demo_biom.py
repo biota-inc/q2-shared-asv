@@ -7,7 +7,7 @@ import numpy as np
 import biom
 from biom.util import biom_open   # thin h5py wrapper
 
-samples = [f"S{i}" for i in range(1, 6)] + [f"N{i}" for i in range(1, 6)]
+samples = [f"S{i}" for i in range(1, 8)] + [f"N{i}" for i in range(1, 7)]
 features = ["ASV1", "ASV2", "ASV3"]
 
 rng = np.random.default_rng(42)

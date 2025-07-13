@@ -9,7 +9,7 @@ def compute(table: biom.Table,
             sample_a: str,
             sample_b: str,
             metadata: qiime2.Metadata,
-            percentage: float) -> biom.Table:
+            percentage: float = 0.0001) -> biom.Table:
     """
     Compute the shared ASVs between two input samples.
 
@@ -23,9 +23,9 @@ def compute(table: biom.Table,
         The sample ID of the second sample to include in the analysis.
     metadata : qiime2.Metadata
         The metadata associated with the feature table.
-    percentage : float
-        The minimum relative frequency required for a feature to be included
-        in the analysis.
+    percentage : float, optional (default = 0.0001)
+        Minimum relative frequency a feature must have (in each sample) to be
+        retained.
 
     Returns
     -------
