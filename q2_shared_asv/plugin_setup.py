@@ -11,7 +11,6 @@ plugin = Plugin(
     short_description='Plugin for computing shared ASV.'
 )
 
-# Register the function as an artifact method
 plugin.methods.register_function(
     function=compute,
     inputs={
@@ -21,23 +20,39 @@ plugin.methods.register_function(
         'sample_a': Str,
         'sample_b': Str,
         'metadata': Metadata,
-        'percentage': Float % Range(0, 1, inclusive_start=True, inclusive_end=True)
+        'percentage': Float % Range(
+            0, 1, inclusive_start=True, inclusive_end=True
+        ),
     },
     outputs=[
         ('shared_asvs', FeatureTable[RelativeFrequency])
     ],
     input_descriptions={
-        'table': 'The feature table containing the samples for which shared ASVs should be computed.'
+        'table': (
+            'The feature table containing the samples for which shared '
+            'ASVs should be computed.'
+        )
     },
     parameter_descriptions={
-        'sample_a': 'The first sample for which shared ASVs should be computed.',
-        'sample_b': 'The second sample for which shared ASVs should be computed.',
+        'sample_a': (
+            'The first sample for which shared ASVs should be computed.'
+        ),
+        'sample_b': (
+            'The second sample for which shared ASVs should be computed.'
+        ),
         'metadata': 'The sample metadata for sample-id',
-        'percentage': 'The threshold for filtering shared ASVs. Recommendation: 0.0001'
+        'percentage': (
+            'The threshold for filtering shared ASVs. Recommendation: 0.0001'
+        )
     },
     output_descriptions={
-        'shared_asvs': 'The resulting feature table containing the shared ASVs between the two samples.'
+        'shared_asvs': (
+            'The resulting feature table containing the shared ASVs '
+            'between the two samples.'
+        )
     },
     name='Compute Shared ASVs',
-    description='Compute the Shared ASVs between two samples within a FeatureTable'
+    description=(
+        'Compute the Shared ASVs between two samples within a FeatureTable'
+    )
 )
