@@ -1,4 +1,4 @@
-from qiime2.plugin import Plugin, Str, Range, Float, Metadata
+from qiime2.plugin import Str, Range, Float, Metadata
 from q2_types.feature_table import FeatureTable, RelativeFrequency
 from q2_shared_asv.compute import compute
 
