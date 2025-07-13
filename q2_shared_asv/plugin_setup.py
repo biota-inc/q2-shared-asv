@@ -6,8 +6,7 @@ plugin = Plugin(
     name='shared-asv',
     version='0.2.0',
     website=(
-        'https://github.com/biota-inc/'
-        'q2-shared-asv'
+        'https://github.com/biota-inc/q2-shared-asv'
     ),
     package='q2_shared_asv',
     description='A QIIME 2 plugin for shared ASV analysis.',
@@ -23,7 +22,11 @@ parameters = {
     'sample_a': Str,
     'sample_b': Str,
     'metadata': Metadata,
-    'percentage': Float % Range(0, 1, inclusive_start=True, inclusive_end=True),
+    'percentage': Float % Range(
+        0, 1,
+        inclusive_start=True,
+        inclusive_end=True,
+    ),
 }
 
 outputs = [
