@@ -1,4 +1,4 @@
-#sample-id	subject	body_site	sample_type
+sample-id	subject	body_site	sample_type
 S1	A	skin	skin
 N1	A	nasal	nasal
 S2	B	skin	skin
