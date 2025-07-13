@@ -43,9 +43,14 @@ jobs:
         run: make install
 
       # 4. Run the regression tests with coverage
-      - name: Run tests
+      - name: Run unit and regression tests
         shell: bash -l {0}
         run: make test
+
+      # 5. Run the smoke tests
+      - name: Run smoke tests
+        shell: bash -l {0}
+        run: make dev && qiime shared-asv --help
 
   lint:
     runs-on: ubuntu-latest
