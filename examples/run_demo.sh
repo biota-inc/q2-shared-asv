@@ -62,6 +62,7 @@ while IFS=$'\t' read -r pairA pairB pairID || [[ -n "$pairA" ]]; do
     --m-metadata-file "$META_ALL" \
     --p-sample-a "$pairA" \
     --p-sample-b "$pairB" \
+    --p-percentage 0.0001 \
     --o-shared-asvs "$out_file"
 done < <(tail -n +2 "$PAIR_MAP")
 
@@ -87,7 +88,7 @@ for i in $(seq 2 "$i_max"); do
 done
 
 # -----------------------------  Step 6  -------------------------------------
-echo -e "\nStep 6 - Eummarize and export"
+echo -e "\nStep 6 - Export"
 
 qiime tools export \
   --input-path "$OUT_DIR/merged_table.qza" \

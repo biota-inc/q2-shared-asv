@@ -46,7 +46,8 @@ parameter_descriptions = {
     'sample_b': 'ID of the second sample.',
     'metadata': 'Sample metadata containing the sample IDs.',
     'percentage': (
-        'Minimum relative frequency threshold (default 0.0001).'
+        'Minimum relative frequency threshold for filtering shared ASVs. '
+        'Recommended value: 0.0001.'
     ),
 }
 
