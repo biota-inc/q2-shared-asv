@@ -1,8 +1,7 @@
-### Pull Request for q2-shared_asv
+### Pull Request for q2-shared-asv
 
 **Before submitting this PR, ensure that**:
 
-- [ ] You have checked code quality using linters (e.g., flake8)
 - [ ] Your code is well-documented
 
 **PR Type**:
@@ -13,9 +12,9 @@
 - [ ] Refactoring (no functional changes, no API changes)
 - [ ] Build related changes
 - [ ] Documentation content changes
-- [ ] Other (please describe): 
+- [ ] Other (please describe):
 
-**Related Issue**: 
+**Related Issue**
 
 - Issue #[ISSUE NUMBER]
 
@@ -26,6 +25,7 @@
 3. 
 
 **Checklist**:
+
 - [ ] Tests are passing locally
 - [ ] Documentation has been updated
 - [ ] Linting checks have passed

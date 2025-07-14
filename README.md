@@ -1,146 +1,147 @@
-# q2-shared_asv
+# q2-shared-asv
 
-q2-shared_asv is a QIIME 2 plugin for shared ASV analysis.
+**q2-shared-asv** is a [QIIME 2](https://qiime2.org) plugin that identifies *shared amplicon sequence variants (ASVs)* between two samples and returns a filtered `FeatureTable[RelativeFrequency]`.
 
 ## Installation
 
 ```bash
-# Activate your qiime2
-conda activate qiime2-2023.2
-pip install git+https://github.com/biota-inc/q2-shared_asv.git
+# 1 Activate the QIIME 2 conda environment
+conda activate qiime2
+
+# 2 Install the plugin directly from GitHub
+pip install "git+https://github.com/biota-inc/q2-shared-asv.git"
+
+# 3 Refresh the QIIME 2 plugin cache (required for dev-installed plugins)
 qiime dev refresh-cache
-qiime --help
-```
+````
 
-## Basic usage
-
-```bash
-$ qiime shared-asv compute --help
-
-Inputs:
-  --i-table ARTIFACT FeatureTable[RelativeFrequency]
-                       The feature table containing the samples for which
-                       shared ASVs should be computed.              [required]
-Parameters:
-  --p-sample-a TEXT    The first sample for which shared ASVs should be
-                       computed.                                    [required]
-  --p-sample-b TEXT    The second sample for which shared ASVs should be
-                       computed.                                    [required]
-  --m-metadata-file METADATA...
-    (multiple          The sample metadata for sample-id
-     arguments will    
-     be merged)                                                     [required]
-  --p-percentage PROPORTION Range(0, 1, inclusive_end=True)
-                       The threshold for filtering shared ASVs based on
-                       relative frequency.                          [required]
-Outputs:
-  --o-shared-asvs ARTIFACT FeatureTable[RelativeFrequency]
-                       The resulting feature table containing the shared ASVs
-                       between the two samples.                     [required]
-```
-
-## Example to run shared-asv plugin
-
-For 16S rRNA amplicon sequencing, use `biota-inc/16S_pipeline` on Github and create `analysis/table-no-unassigned-feature-filtered.qza`.
-
-1. Make a relative frequency table
+You can confirm that the command is registered with:
 
 ```bash
-# Compute the relative frequency of the features
+qiime shared-asv --help
+```
+
+## Quick Start
+
+The `qiime shared-asv compute` command identifies shared ASVs (Amplicon Sequence Variants) between two specific samples from a feature table. It filters based on a minimum relative frequency threshold and produces a new table containing only the ASVs shared by both samples.
+
+### Use Case
+
+This tool is useful for comparing microbial compositions between two samples to identify common taxa while excluding low-abundance noise.
+
+### Example
+
+```bash
+qiime shared-asv compute \
+  --i-table table.qza \
+  --p-sample-a Sample1 \
+  --p-sample-b Sample2 \
+  --m-metadata-file metadata.tsv \
+  --p-percentage 0.01 \
+  --o-shared-asvs shared-asv-table.qza
+```
+
+This command computes shared ASVs between `Sample1` and `Sample2` that each have a relative frequency of at least 1%.
+
+## Command Parameters Summary
+
+| **Type**      | **Option**          | **Description**                                                                    | **Required** |
+| ------------- | ------------------- | ---------------------------------------------------------------------------------- | ------------ |
+| **Input**     | `--i-table`         | Feature table containing relative frequencies (`FeatureTable[RelativeFrequency]`). | ✅ Yes        |
+| **Parameter** | `--p-sample-a`      | Sample ID for the first sample to compare.                                         | ✅ Yes        |
+| **Parameter** | `--p-sample-b`      | Sample ID for the second sample to compare.                                        | ✅ Yes        |
+| **Parameter** | `--m-metadata-file` | Sample metadata file (must contain `sample-id` column).                            | ✅ Yes        |
+| **Parameter** | `--p-percentage`    | Minimum relative frequency threshold (float between 0 and 1. Default: 0.0001).                      | No        |
+| **Output**    | `--o-shared-asvs`   | Output feature table containing shared ASVs (`FeatureTable[RelativeFrequency]`).   | ✅ Yes        |
+
+Would you like a Japanese translation or a visualization of the shared ASVs workflow next?
+
+## End-to-end example
+
+### 1 Generate a relative-frequency table
+
+```bash
+# Compute relative frequencies
 qiime feature-table relative-frequency \
---i-table analysis/table-no-unassigned-feature-filtered.qza \
---o-relative-frequency-table analysis/relative_frequency.qza
+  --i-table analysis/table-no-unassigned-feature-filtered.qza \
+  --o-relative-frequency-table analysis/relative_frequency.qza
 
-# Summarize the relative frequency table
-qiime feature-table summarize \                                   
---i-table  analysis/relative_frequency.qza \ 
---o-visualization  analysis/relative_frequency.qzv
+# Summarize
+qiime feature-table summarize \
+  --i-table analysis/relative_frequency.qza \
+  --o-visualization analysis/relative_frequency.qzv
 ```
 
-2. Make a table like below and name it as shared_asv.txt (tab-demilited format txt file).
+### 2 Prepare a *pair map*
 
-**Note: An empty last line is required!**
+Create a **tab-delimited** text file called `shared_asv.txt`:
 
 | Pair A | Pair B | Pair ID |
-|--------|--------|---------|
+| ------ | ------ | ------- |
 | S1     | N1     | 1       |
 | S2     | N2     | 2       |
 | S3     | N3     | 3       |
 | S4     | N4     | 4       |
 | S5     | N5     | 5       |
-|        |        |         |
 
-3. Run the command below. This step generates the shared ASV table of each pair.  
-
+### 3 Run the plugin for every pair
 
 ```bash
-#  If tab delimiters are not recognized well, enclose `$line` and `$PairA(B)` with Quotation Marks (for example, `$(echo "$line" |`)
+while IFS=$'\t' read -r pairA pairB pairID || [ -n "$pairA" ]; do
+  qiime shared-asv compute \
+    --i-table path/to/your/relative_frequency.qza \
+    --m-metadata-file path/to/your/sample_metadata.tsv \
+    --p-sample-a "$pairA" \
+    --p-sample-b "$pairB" \
+    --p-percentage 0.0001 \
+    --o-shared-asvs "path/to/output/shared_asvs_${pairID}.qza"
+done < path/to/your/shared_asv.txt
+```
 
-tail -n +2 metadata/shared_asv.txt | while read line; do
-    PairA=$(echo $line | awk -F'\t' '{print $1}' | tr -d '[:space:]')
-    PairB=$(echo $line | awk -F'\t' '{print $2}' | tr -d '[:space:]')
-    ID=$(echo $line | awk -F'\t' '{print $3}' | tr -d '[:space:]')
+### 4 (Optional) Filter each shared table by metadata
 
-    qiime shared-asv compute \
-        --i-table relative_frequency.qza \
-        --m-metadata-file metadata/sample-data.txt \
-        --p-sample-a $PairA \
-        --p-sample-b $PairB \
-        --p-percentage 0.0001 \
-        --o-shared-asvs analysis/shared-asvs_$ID.qza
+> Example: extract only samples labeled `"skin"` in the `sample_type` column.
+
+```bash
+for i in $(seq 1 5); do
+  qiime feature-table filter-samples \
+    --i-table "path/to/output/shared_asvs_${i}.qza" \
+    --m-metadata-file path/to/your/sample_metadata_skin_only.tsv \
+    --o-filtered-table "path/to/output/shared_asvs_${i}_skin.qza"
 done
 ```
 
-4. Filter samples for each shared-asvs file
+### 5 Merge the filtered tables
 
 ```bash
-# For example, filtering samples by using sample-data_skin.txt extracting only skin label of sample_type (if not, create this kind of file)
+# Start by copying the first filtered table
+cp path/to/output/shared_asvs_1_skin.qza path/to/output/merged_table.qza
 
-for i in {1..39}; do
-qiime feature-table filter-samples \
-  --i-table analysis/shared-asvs_${i}.qza \
-  --m-metadata-file metadata/sample-data_skin.txt \
-  --o-filtered-table analysis/shared-asvs_${i}_skin.qza
+for i in $(seq 2 5); do
+  qiime feature-table merge \
+    --i-tables path/to/output/merged_table.qza \
+    --i-tables "path/to/output/shared_asvs_${i}_skin.qza" \
+    --o-merged-table path/to/output/tmp_merged_table.qza
+  mv path/to/output/tmp_merged_table.qza path/to/output/merged_table.qza
 done
 ```
 
-5. Merge the table files into one!
+### 6 Export
 
 ```bash
-# Initialize the merged table with the first shared-asvs skin file
-cp  analysis/shared-asvs_1_skin.qza  analysis/merged-table.qza
-
-# Merge all shared-asvs skin files
-for i in {2..39}; do
-    qiime feature-table merge \
-        --i-tables  analysis/merged-table.qza \
-        --i-tables  analysis/shared-asvs_${i}_skin.qza \
-        --o-merged-table  analysis/temp_merged-table.qza
-
-     mv  analysis/temp_merged-table.qza  analysis/merged-table.qza
-done
-```
-
-6. Final steps
-
-```bash
-# Summarize the merged table
-qiime feature-table summarize \
-        --i-table  analysis/merged-table.qza \
-        --o-visualization  analysis/merged-table.qzv
-
-# Export the merged table as a .biom file
+# Export the table in BIOM format
 qiime tools export \
-  --input-path  analysis/merged-table.qza \
-  --output-path  analysis/merged-table
-  
-# Convert the .biom file to a TSV format
+  --input-path path/to/output/merged_table.qza \
+  --output-path path/to/output/merged_table_exported
+
+# Convert the BIOM file to TSV format
 biom convert \
-  -i  analysis/merged-table/feature-table.biom \
-  -o  analysis/merged-table/table_biom.txt \
+  -i path/to/output/merged_table_exported/feature-table.biom \
+  -o path/to/output/feature_table.tsv \
   --to-tsv
 ```
 
-# License
+## License
 
-q2-shared_asv is available under the BSD-3-Clause License. See the LICENSE file for more info.
+`q2-shared-asv` is distributed under the **BSD-3-Clause** license.
+See [`LICENSE`](LICENSE) for the full text.

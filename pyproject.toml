@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "q2-shared-asv"
+version = "0.2.0"
+description = "A QIIME 2 plugin for shared ASV analysis"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Biota, inc." }
+]
+requires-python = ">=3.10"
+dependencies = [
+  "qiime2 >=2024.10.1",
+  "q2-types >=2024.10.0",
+  "q2-feature-table >=2024.10.0",
+  "biom-format >=2.1.15",
+  "setuptools",
+]
+
+[project.urls]
+Homepage = "https://github.com/biota-inc/q2-shared-asv"
+
+# -------------------------------------------------------------------
+# Entry-points (equivalent to entry_points=… in setup.py)
+# -------------------------------------------------------------------
+[project.entry-points."qiime2.plugins"]
+q2-shared-asv = "q2_shared_asv.plugin_setup:plugin"
+
+# -------------------------------------------------------------------
+# setuptools-specific options
+# -------------------------------------------------------------------
+[tool.setuptools]
+packages = ["q2_shared_asv"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"q2_shared_asv" = ["*"]
