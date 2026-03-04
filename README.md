@@ -67,8 +67,8 @@ qiime feature-table relative-frequency \
   --o-relative-frequency-table analysis/relative_frequency.qza
 
 # Summarize
-qiime feature-table summarize \
-  --i-table analysis/relative_frequency.qza \
+qiime metadata tabulate \
+  --m-input-file analysis/relative_frequency.qza \
   --o-visualization analysis/relative_frequency.qzv
 ```
 
